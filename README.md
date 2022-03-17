@@ -1,2 +1,2 @@
-# server_scripts
-A collection of server scripts I've created during years of fullstack development to solve annoying problems! Might aswell share them
+# Server Scripts
+This is a collection of scripts (shell/bash mainly), that I've created to automate tasks that I find myself doing over-and-over again.
