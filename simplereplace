@@ -1,0 +1,93 @@
+#!/bin/bash
+#Simple Replacer!
+#Setting up colors
+black=`tput setaf 0`
+red=`tput setaf 1`
+green=`tput setaf 2`
+yellow=`tput setaf 3`
+yellow1=`tput setaf 226`
+blue=`tput setaf 4`
+vblue=`tput setaf 12`
+magenta=`tput setaf 5`
+cyan=`tput setaf 6`
+white=`tput setaf 7`
+grey=`tput setaf 250`
+#Setting up formatting
+bold=`tput bold`
+uline=`tput smul`
+blink=`tput blink`
+reset=`tput sgr0`
+
+
+# DEFAULT PATH, CHANGE HERE IF NEEDED
+path="/home/please/change/me/"
+
+# Don't touch this!
+mod="*"
+extension=".sh"
+full=$path$mod$extension;
+
+clear
+while true; do
+	echo "Do you wish to set a custom path? (y/n)?"
+	echo ""
+	echo 'Standardpath is: '"$path"
+	echo 'Extension: '"$extension"
+	echo ""
+	echo "(This can be changed in the script!)"
+	read -p "> " yn
+	case $yn in
+		[Yy]*) is_custom=true; echo ""; echo "Destination (Complete path with trailing slash, ex: /home/me/folder/target/):"; read -p "> " custompath; echo "Extension (ex: .txt):"; read -p "> " custom_ext; break;;
+		[Nn]*) is_custom=false; break;;
+		*) echo "Please choose yes or no (y/n)";;
+	esac
+done
+echo ""
+echo ""
+# Very simple check
+if $is_custom
+then
+	if [ -z $custompath ] || [ -z $custom_ext ]
+	then
+		echo "Custom path and/or extension cannot be empty"
+		exit;
+	else
+		custom_full=$custompath$mod$custom_ext
+	fi
+fi
+
+echo "${bold}What do you want to replace (old)${reset}"
+read -p "> " old_input
+
+echo "${bold}What do you want to replace this with? (new)${reset}"
+read -p "> " new_input
+
+echo ""
+echo ""
+echo ""
+
+echo "Replacing: "
+echo $old_input
+echo ""
+echo "With: "
+echo $new_input
+echo ""
+if $is_custom
+then
+	echo 'Path: '"$custompath"
+	echo 'Extension: '"$custom_ext"
+else
+	echo 'Path: '"$path"
+	echo 'Extension: '"$extension"
+fi
+echo ""
+read -p "Does this look correct? (${bold}ENTER${reset} to continue, ${bold}CTRL+C${reset} to abort): " confirm
+
+if $is_custom
+then
+	sed -i 's/'"$old_api_key"'/'"$new_input"'/g' $custom_full
+else
+	sed -i 's/'"$old_api_key"'/'"$new_input"'/g' $full
+fi
+
+echo "All done!"
