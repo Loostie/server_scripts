@@ -1,5 +1,6 @@
 #!/bin/bash
 # Needs: RSYNC; sendemail;
+# sudo apt install sendemail
 # Remember to set up SSH keys so the script can run without having to authenticate!
 
 #VARS
