@@ -1,0 +1,42 @@
+#!/bin/bash
+# Needs: RSYNC; sendemail;
+# Remember to set up SSH keys so the script can run without having to authenticate!
+
+#VARS
+mc=my.smtp.host:PORT
+xu=smptuser@domain.dn
+xp=smptpassword
+today="$(date +%d-%m-%y)"
+# Email related
+# Failed Subject
+SF="The rsync failed!"
+# Failed body
+BF='The rsync on server: x failed '"$today"
+# Sucess Subject
+SS="The rsync was successful!"
+# Success Body
+BS='The backup on server: x successfully ran '"$today"
+
+## Remember to comment out, or delete the rsync method you're not using!
+
+# This retrieves "myprojects" on the external host and puts it in /home/backups/serverX/ on the local machine/server
+rsync -azP --rsync-path="sudo rsync" user@host:/home/websites/myprojects "/home/backups/serverX/"
+
+# This is just the other way around, this will send "myprojects" locally to "serverX" on remote host
+rsync -azP -e "ssh -p PORT" --rsync-path="sudo rsync" "/home/websites/myprojects" user@host:"/home/backups/serverX/"
+
+RES=$?
+echo $RES
+
+#Sender mail om status av backup
+if [ "${RES}" = "0" ];
+        then
+                # If the rsync completed without errors:
+                # You can remove this if you just want to get notified when it fails
+                sendemail -f felles@sdbackup.com -t $xu -u "$SS" -m "$BS" -s $mc -xu $xu -xp $xp
+        else
+                # If the rsync failed
+                sendemail -f felles@sdbackup.com -t $xu -u "$SF" -m "$BF" -s $mc -xu $xu -xp $xp
+exit 1
+fi
+#END
