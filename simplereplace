@@ -85,9 +85,9 @@ read -p "Does this look correct? (${bold}ENTER${reset} to continue, ${bold}CTRL+
 
 if $is_custom
 then
-	sed -i 's/'"$old_api_key"'/'"$new_input"'/g' $custom_full
+	sed -i 's/'"$old_input"'/'"$new_input"'/g' $custom_full
 else
-	sed -i 's/'"$old_api_key"'/'"$new_input"'/g' $full
+	sed -i 's/'"$old_input"'/'"$new_input"'/g' $full
 fi
 
 echo "All done!"
