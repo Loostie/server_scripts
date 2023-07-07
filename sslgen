@@ -1,0 +1,44 @@
+#!/bin/bash
+# This script generates SSL certs with certbot and exports it to PFX
+clear
+echo "SSLGen"
+echo "--------------"
+if [ "$EUID" -ne 0 ]
+	then echo "You need to run this script as root..."
+	exit
+fi
+
+if ! command -v certbot &> /dev/null
+then
+    echo "certbot could not be found, you need to install it"
+    exit
+fi
+
+if ! command -v openssl &> /dev/null
+then
+    echo "openssl could not be found, you need to install it"
+    exit
+fi
+
+if [ "$#" -eq 0 ]
+	then echo "You need to provide the domain as an argument... example: sslgen mydomain.test";
+	exit
+fi
+
+mkdir -p /home/ssl/generated
+cpto="/home/ssl/generated"
+
+domain=$1
+read -p "Enter your email: " email
+
+certbot certonly --manual --preferred-challenges=dns --email $email --server https://acme-v02.api.letsencrypt.org/directory --agree-tos -d $domain
+clear
+
+echo "Copying files to: ${cpto} ...";
+cp /etc/letsencrypt/live/$domain/* $cpto;
+
+echo 'Generating PFX, enter password for PFX import/export...'
+cd $cpto
+openssl pkcs12 -export -in cert.pem -inkey privkey.pem -out $domain.pfx
+
+echo "Done!"
